@@ -3,6 +3,8 @@
 require 'ImportadorFacade.php';
 require 'Hapvida.php';
 require 'Itau.php';
+require 'PersisteDados.php';
+//require 'DataBase.php';
 $importador = new ImportadorFacade();
 
 $importador->importar('teste.CSV', 'hapvida');

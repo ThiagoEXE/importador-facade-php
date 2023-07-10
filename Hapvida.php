@@ -8,7 +8,6 @@ class Hapvida extends Importador
     {
         $numeroLinha = 1;
         $coluna = null;
-        //$limit = 30;
         $handle = fopen($arquivo, 'r');
        
 
@@ -46,7 +45,7 @@ class Hapvida extends Importador
 
     public function validaArquivo($registrosArquivo)
     {
-        //funções herdadas de Importador
+        //chamando funções herdadas de Importador para limpar os dados das respectivas colunas
         $funcoesColunas = [
             'beneficiario' => 'removerAcentosEspacoseConverterCaixaAlta',
             'parentesco' => 'removerAcentosEspacoseConverterCaixaAlta',
@@ -60,9 +59,9 @@ class Hapvida extends Importador
             'matricula' => 'limparMatricula',
         ];
 
-        $dadosModel = [];
+        $dadosLimpos = [];
         foreach ($registrosArquivo as $registros) {
-            $registroModel = [];
+            $dadosSelecionados = [];
             foreach ($registros as $colunas => &$valor) {
                 if (isset($funcoesColunas[$colunas])) {
                     $funcao = $funcoesColunas[$colunas];
@@ -85,16 +84,16 @@ class Hapvida extends Importador
                         'adicional'
                     ]
                 )) {
-                    $registroModel[$colunas] = $valor;
+                    $dadosSelecionados[$colunas] = $valor;
                 }
             }
-            $dadosModel[] = $registroModel;
+            $dadosLimpos[] = $dadosSelecionados;
             
         }
-         $this->insereBanco($dadosModel);
+         return $dadosLimpos;
     }
 
-    public function insereBanco($registros)
+    public function preparaQuery($registros)
     {
     
      $valores = [];
@@ -112,19 +111,18 @@ class Hapvida extends Importador
             $mensalidade = $registro['mensalidade'];
             $adicional = $registro['adicional'];
 
-            $valores[] = "('$cpf', $matricula, '$credencial', '$beneficiario', 
-        '$mae', '$dtNascimento', '$dtInicio', '$parentesco', '$plano', '$mensalidade', '$adicional')";
+            $valores[] = "('$cpf', '$matricula', '$credencial', '$beneficiario', 
+        '$mae', '$dtNascimento', '$dtInicio', '$parentesco', '$plano', $mensalidade, $adicional)";
         }
         $query = 
         "INSERT INTO tmp_hapvida_saude_titular 
         (cpf, matricula, credencial, beneficiario, mae, nascimento, inicio, 
-        parentesco, plano, mensalidade, adicional, desconto, val_empresa) 
+        parentesco, plano, mensalidade, adicional) 
         VALUES " . implode(", ", $valores);
 
       /*  echo '<pre>';
         echo $query;
         echo '<pre>';*/
-        $banco = new DataBase(); 
-        $banco->conexaoBanco();
+      return $query;
     }
 }

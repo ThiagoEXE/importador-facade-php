@@ -12,4 +12,8 @@ class Itau extends Importador
     {
         echo "Validando arquivo do Itau: " . $arquivo . "<br>";
     }
+    public function preparaQuery($registros)
+    {
+        
+    }
 }

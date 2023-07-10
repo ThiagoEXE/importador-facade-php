@@ -7,6 +7,7 @@ abstract class Importador
 
     abstract function importar($arquivo);
     abstract function validaArquivo($arquivo);
+    abstract function preparaQuery($registros);
     abstract function critica();
 
     //Função que valida o digito verificado do cpf
@@ -47,6 +48,9 @@ abstract class Importador
     {
         $cpfSemCracteres = preg_replace('/[^0-9]/', '', $cpf);
         $cpfSemCracteres = str_pad($cpfSemCracteres, 11, '0', STR_PAD_LEFT);
+        if($cpfSemCracteres == '00000000000'){
+            $cpfSemCracteres = '';
+        }
         return trim($cpfSemCracteres);
     }
 
@@ -56,7 +60,7 @@ abstract class Importador
         return trim($credencialSemCracteres);
     }
 
-    function limparMatricula($matricula)
+    public function limparMatricula($matricula)
     {
         $matricula = preg_replace('/[^0-9]/', '', $matricula);
 
@@ -65,6 +69,10 @@ abstract class Importador
         } else {
 
             $matriculaFormatada = str_pad($matricula, 6, '0', STR_PAD_LEFT);
+            
+            if($matriculaFormatada == '000000'){
+                $matriculaFormatada = '';
+            }
         }
         return trim($matriculaFormatada);
     }

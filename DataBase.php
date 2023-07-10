@@ -15,7 +15,6 @@ class DataBase
 
     public function conexaoBanco()
     {
-        echo "teste";
         $config = $this->load_config();
         $host = $config['POSTGRESQL']['host'];
         $port = $config['POSTGRESQL']['port'];
@@ -25,12 +24,10 @@ class DataBase
         $keepalive_idle = 300;
 
         $conexao =  pg_connect("host=$host port=$port dbname=$dbname user=$user password=$password keepalives_idle=$keepalive_idle");
-        if($conexao){
-            echo "conectou no banco";
         
-          }else{
-            echo "não conectou no banco";
-          }
+        $resultado = ($conexao == true) ? "Conectou no banco" : "Não conectou no banco";
+        
+        echo $resultado;
         return $conexao;
     }
 
