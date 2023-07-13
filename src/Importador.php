@@ -4,11 +4,25 @@
 
 abstract class Importador
 {
+    public $arquivo;
+    private $status;
+    public $hash;
+    private $tipoArquivo;
+    public $registros = [];
 
-    abstract function importar($arquivo);
-    abstract function validaArquivo($arquivo);
+  /*  public function __construct($arquivo) {
+        $this->arquivo = $arquivo;
+        $this->hash = $this->geraHashArquivo($arquivo);
+    }*/
+    abstract function importar();
+    abstract function limparArquivo();
     abstract function preparaQuery($registros);
     abstract function critica();
+
+    public function geraHashArquivo($arquivo){
+
+        return hash_file('sha256', $arquivo);
+    }
 
     //Função que valida o digito verificado do cpf
     function validaCPF($cpf)

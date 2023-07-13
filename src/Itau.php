@@ -2,15 +2,18 @@
 
 class Itau extends Importador
 {
-    public function importar($arquivo){
+    public function geraHashArquivo($arquivo){
+        
+    }
+    public function importar(){
     }
     public function critica()
     {
         echo "Realizando critica dos dados importados Itau<br>";
     }
-    public function validaArquivo($arquivo)
+    public function limparArquivo()
     {
-        echo "Validando arquivo do Itau: " . $arquivo . "<br>";
+        
     }
     public function preparaQuery($registros)
     {

@@ -4,17 +4,20 @@ require 'DataBase.php';
 
 class Hapvida extends Importador
 {
-    public function importar($arquivo)
+    private $status;
+
+    
+    public function importar()
     {
         $numeroLinha = 1;
         $coluna = null;
-        $handle = fopen($arquivo, 'r');
+        $handle = fopen($this->arquivo, 'r');
        
 
         if (!($handle)) {
             die("Não foi possível abrir o arquivo...");
         }
-        $registros = [];
+        $this->registros = [];
         while (($linha = fgetcsv($handle, 1000, ';')) !== false) {
             if ($numeroLinha === 8) {
                 $coluna = $linha;
@@ -24,7 +27,7 @@ class Hapvida extends Importador
                 //verifica se a quantidade de dados é igual que a quantidade de colunas
                 if (count($coluna) === count($linha)) {
                     $registro = array_combine($coluna, $linha);
-                    $registros[] = $registro;
+                    $this->registros[] = $registro;
                  
                 } else {
                     echo "coluna nao corresponde;";
@@ -34,7 +37,6 @@ class Hapvida extends Importador
             $numeroLinha++;
         }
         fclose($handle);
-        return $registros;
         // echo "Importando dados a partir do arquivo " . $arquivo . "<br>";
 
     }
@@ -43,7 +45,7 @@ class Hapvida extends Importador
         echo "Realizando critica dos dados importados Hapvida<br>";
     }
 
-    public function validaArquivo($registrosArquivo)
+    public function limparArquivo()
     {
         //chamando funções herdadas de Importador para limpar os dados das respectivas colunas
         $funcoesColunas = [
@@ -60,9 +62,9 @@ class Hapvida extends Importador
         ];
 
         $dadosLimpos = [];
-        foreach ($registrosArquivo as $registros) {
+        foreach ($this->registros as $registro) {
             $dadosSelecionados = [];
-            foreach ($registros as $colunas => &$valor) {
+            foreach ($registro as $colunas => &$valor) {
                 if (isset($funcoesColunas[$colunas])) {
                     $funcao = $funcoesColunas[$colunas];
                     $valor = $this->$funcao($valor);
@@ -120,9 +122,9 @@ class Hapvida extends Importador
         parentesco, plano, mensalidade, adicional) 
         VALUES " . implode(", ", $valores);
 
-      /*  echo '<pre>';
+        echo '<pre>';
         echo $query;
-        echo '<pre>';*/
+        echo '<pre>';
       return $query;
     }
 }
