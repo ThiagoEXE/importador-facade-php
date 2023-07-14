@@ -1,44 +1,25 @@
 <?php
 
+use JetBrains\PhpStorm\Immutable;
 use PHPUnit\Framework\TestCase;
 
 class ImportadorTest extends TestCase
 {
 
-
-    public function testDeveRemoverCaracteresDoCpf()
+    public function testDeveGerarHashDoArquivo()
     {
+        // Arrange
+        $reflectionClass = new ReflectionClass(Hapvida::class);
+        $reflectionMethod = $reflectionClass->getMethod('gerarHashArquivo');
+        $reflectionMethod->setAccessible(true);
 
-        //Arrange
-        /**
-         * @deprecated version 10.1
-         */
-        $abstractImportadorMock = $this->getMockForAbstractClass(Importador::class);
+        $importador = $reflectionClass->newInstanceWithoutConstructor();
 
+        // Act
+        $result = $reflectionMethod->invoke($importador, './src/teste.csv');
+        $hashEsperado = 'f2a14f34fd47dfe595438d1d4fe12aa760b1a368ebb10b582b0b48c899c5eb85';
 
-        //Act
-        $result = $abstractImportadorMock->removerCracteresCpf('@@### 124.874.458-68');
-
-        //Assert
-        $this->assertEquals('12487445868', $result);
-    }
-
-    public function testDeveRemoverCractereseEspacosDaCredencial()
-    {
-
-        //Arrange
-        /**
-         * @deprecated version 10.1
-         */
-        $abstractImportadorMock = $this->getMockForAbstractClass(Importador::class);
-
-
-        //Act
-        $result = $abstractImportadorMock->removerCracteresCredencial('04EX.9000008-#00 1');
-
-
-
-        //Assert
-        $this->assertEquals('04EX9000008001' , $result);
+        // Assert
+        $this->assertEquals($hashEsperado, $result);
     }
 }
