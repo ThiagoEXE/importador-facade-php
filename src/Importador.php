@@ -5,19 +5,20 @@
 abstract class Importador
 {
     public $arquivo;
-    private $status;
+    public $status; //status da importação
     public $hash;
-    private $tipoArquivo;
+    //public $tipoArquivo;//nome do arquivo
     public $registros = [];
+    public $dadosLimpos = [];
 
-   
+
     public function __construct()
     {
         $argumentos = func_get_args();
         $numeroDeArgumentos = func_num_args();
 
         if (method_exists($this, $function =
-            'ConstructorWithArgument' . $numeroDeArgumentos)) {
+            'construtorComArgumento' . $numeroDeArgumentos)) {
             call_user_func_array(
                 array($this, $function),
                 $argumentos
@@ -25,16 +26,15 @@ abstract class Importador
         }
     }
 
-    public function ConstructorWithArgument1($arquivo)
+    public function construtorComArgumento1($arquivo)
     {
         $this->arquivo = $arquivo;
         $this->hash = $this->gerarHashArquivo($arquivo);
     }
 
 
-    abstract function importar();
-    abstract function limparArquivo();
-    abstract function preparaQuery($registros);
+    abstract function lerArquivoeRetornarUmArrayDeDados();
+    abstract function limparDadoseRetornarUmNovoArrayDeColunasSelecionadas();
     abstract function critica();
 
     public function gerarHashArquivo($arquivo)
@@ -91,12 +91,14 @@ abstract class Importador
         return trim($cpfSemCracteres);
     }
 
-    public function removerCracteresCredencial($credencial)
+    public function removerCractereseAcentosDoTextoeColocarEmCaixaAlta($texto)
     {
+        //Remove Acentos
+        $textoSemAcento = preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/"), explode(" ", "a A e E i I o O u U n N"), $texto);
         //remove tudo que não for letra ou número 
-        $credencialSemCracteres = preg_replace('/[^0-9,A-Z,a-z]/', '', $credencial);
-        $credencialFormatadaCaixaAlta = strtoupper($credencialSemCracteres);
-        return trim($credencialFormatadaCaixaAlta);
+        $textoSemCracteres = preg_replace('/[^0-9,A-Z,a-z]/', '', $textoSemAcento);
+        $textoFormatadoCaixaAlta = strtoupper($textoSemCracteres);
+        return trim($textoFormatadoCaixaAlta);
     }
 
     public function limparMatricula($matricula)
@@ -117,7 +119,7 @@ abstract class Importador
         return trim($matriculaFormatada);
     }
 
-    public function removerCaracteresEspeciaiseConverterCaixaAlta($texto)
+    public function removerNumerosCaractereseAcentoseConverterCaixaAlta($texto)
     {
         //Remove Acentos
         $textoSemAcento = preg_replace(array("/(á|à|ã|â|ä)/", "/(Á|À|Ã|Â|Ä)/", "/(é|è|ê|ë)/", "/(É|È|Ê|Ë)/", "/(í|ì|î|ï)/", "/(Í|Ì|Î|Ï)/", "/(ó|ò|õ|ô|ö)/", "/(Ó|Ò|Õ|Ô|Ö)/", "/(ú|ù|û|ü)/", "/(Ú|Ù|Û|Ü)/", "/(ñ)/", "/(Ñ)/"), explode(" ", "a A e E i I o O u U n N"), $texto);

@@ -1,35 +1,40 @@
 <?php
 
-class ImportadorFacade{
+class ImportadorFacade
+{
     private $obImportador;
     private $persisteDados;
     private $conexao;
 
-    public function __construct() {
-        //$this->itau = new Itau();
-        $this->persisteDados = new PersisteDados();
-        $this->conexao = new DataBase();
+    public function __construct()
+    {
+        
     }
-
-    function importar($arquivo, $tipo){
-        if($tipo === 'hapvida'){
+    
+    function importar($arquivo, $tipo)
+    {
+        if ($tipo === 'hapvida') {
             $this->obImportador = new Hapvida($arquivo);
-
+            
             $hashArquivo = $this->obImportador->hash;
             
-            $this->obImportador->importar();
-            $registros = $this->obImportador->limparArquivo();
-           // $query = $this->obImportador->preparaQuery($registros);
-          //  $conexao = $this->conexao->conexaoBanco();
-          //  $this->persisteDados->insereDadosHapVida($conexao, $query);
-            
+            $this->obImportador->lerArquivoeRetornarUmArrayDeDados();
+            $this->obImportador->limparDadoseRetornarUmNovoArrayDeColunasSelecionadas();
             $this->obImportador->critica();
-        }else if($tipo === 'itau'){
+            //recebe os dados limpos do array que esta na classe abstrata Importador
+            $dadosHapVida = $this->obImportador->dadosLimpos;
+            if(!empty($dadosHapVida)){
+                $this->conexao = new DataBase();
+                $this->persisteDados = new PersisteDados($this->conexao);
+                $this->persisteDados->preparaQueryDeImportacaoHapVida($hashArquivo, $tipo, $dadosHapVida);
+            }
+      
+        } else if ($tipo === 'itau') {
             $this->obImportador = new Itau($arquivo);
-            $this->obImportador->importar($arquivo);
-           // $this->obImportador->critica();
-            $this->obImportador->limparArquivo();
-        }else{
+            $this->obImportador->lerArquivoeRetornarUmArrayDeDados($arquivo);
+            // $this->obImportador->critica();
+            $this->obImportador->limparDadoseRetornarUmNovoArrayDeColunasSelecionadas();
+        } else {
             echo "Tipo de importação inválido";
         }
     }
