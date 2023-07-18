@@ -17,16 +17,19 @@ class ImportadorFacade
             $this->obImportador = new Hapvida($arquivo);
             
             $hashArquivo = $this->obImportador->hash;
-            
+            //nome do arquivo
+            $nomeDoArquivo = basename($arquivo);
             $this->obImportador->lerArquivoeRetornarUmArrayDeDados();
             $this->obImportador->limparDadoseRetornarUmNovoArrayDeColunasSelecionadas();
-            $this->obImportador->critica();
+            //$this->obImportador->critica();
             //recebe os dados limpos do array que esta na classe abstrata Importador
             $dadosHapVida = $this->obImportador->dadosLimpos;
+
             if(!empty($dadosHapVida)){
                 $this->conexao = new DataBase();
-                $this->persisteDados = new PersisteDados($this->conexao);
-                $this->persisteDados->preparaQueryDeImportacaoHapVida($hashArquivo, $tipo, $dadosHapVida);
+                $conexao = $this->conexao->conexaoBanco();
+                $this->persisteDados = new PersisteDados($conexao);
+                $this->persisteDados->insereDadosHapVida($hashArquivo, $tipo, $nomeDoArquivo, $dadosHapVida);
             }
       
         } else if ($tipo === 'itau') {

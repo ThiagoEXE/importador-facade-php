@@ -5,9 +5,7 @@
 abstract class Importador
 {
     public $arquivo;
-    public $status; //status da importação
     public $hash;
-    //public $tipoArquivo;//nome do arquivo
     public $registros = [];
     public $dadosLimpos = [];
 

@@ -3,6 +3,8 @@
 class DataBase
 {
 
+    private $conexao;
+
     public function load_config()
     {
         if (file_exists('config.dev')) {
@@ -21,15 +23,17 @@ class DataBase
         $user = $config['POSTGRESQL']['user'];
         $password = $config['POSTGRESQL']['password'];
         $dbname = $config['POSTGRESQL']['dbname'];
-        $keepalive_idle = 300;
 
-        $conexao =  pg_connect("host=$host port=$port dbname=$dbname user=$user password=$password keepalives_idle=$keepalive_idle");
-        
-        $resultado = ($conexao == true) ? "Conectou no banco" : "Não conectou no banco";
-        
-        echo $resultado;
-        return $conexao;
+        try {
+            $this->conexao = new PDO("pgsql:host=$host;port=$port;dbname=$dbname", $user, $password);
+            $this->conexao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            $this->conexao->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+            $this->conexao->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+
+
+            return $this->conexao;
+        } catch (PDOException $e) {
+            die("Falha na conexão com o banco: " . $e->getMessage());
+        }
     }
-
-    
 }

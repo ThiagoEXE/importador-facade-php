@@ -5,9 +5,6 @@ require 'DataBase.php';
 class Hapvida extends Importador
 {
 
-    
-
-
     public function lerArquivoeRetornarUmArrayDeDados()
     {
         $numeroLinha = 1;
